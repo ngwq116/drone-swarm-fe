@@ -1,4 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import TitleSection from "./components/TitleSection";
+import MetricCard from "./components/MetricCard";
+import { LOG_BORDER, LOG_COLORS } from "./constants/constants";
+import Button from "./components/Button";
+import cn from "./utils/ClassMerge";
 
 const GRID = 20;
 const TOTAL = GRID * GRID;
@@ -194,44 +199,6 @@ function BattBar({ pct }) {
   );
 }
 
-function MetricCard({ label, value, sub, accentColor = "border-t-[#00e5ff]" }) {
-  return (
-    <div
-      className={`bg-[#0c1e38] border border-[#0f3460] border-t-2 ${accentColor} p-3 rounded-sm`}
-    >
-      <div className="text-[10px] tracking-widest text-[#7ca5c9] uppercase font-['Barlow_Condensed'] mb-1">
-        {label}
-      </div>
-      <div
-        className="font-['Share_Tech_Mono'] text-[22px] leading-none"
-        dangerouslySetInnerHTML={{ __html: value }}
-      />
-      {sub && (
-        <div className="font-['Share_Tech_Mono'] text-[10px] text-[#7ca5c9] mt-1">
-          {sub}
-        </div>
-      )}
-    </div>
-  );
-}
-
-const LOG_COLORS = {
-  SYS: "text-[#7ca5c9]",
-  REASONING: "text-[#7eb8d4]",
-  TOOL: "text-emerald-400",
-  RESULT: "text-amber-400",
-  ALERT: "text-red-400",
-  COMPLETE: "text-[#00e5ff]",
-};
-const LOG_BORDER = {
-  SYS: "border-[#7ca5c9]",
-  REASONING: "border-[#7eb8d4]",
-  TOOL: "border-emerald-400",
-  RESULT: "border-amber-400",
-  ALERT: "border-red-400",
-  COMPLETE: "border-[#00e5ff]",
-};
-
 function cellBg(cell, drones) {
   const drone = drones.find(
     (d) => d.x === cell.x && d.y === cell.y && d.status !== "FAILED",
@@ -365,6 +332,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-[#040d18] font-['Barlow'] text-[#e0f0ff] overflow-hidden">
+      {/* TODO: Put this link to index.css file */}
       <link
         href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600&family=Barlow+Condensed:wght@400;700&display=swap"
         rel="stylesheet"
@@ -380,10 +348,18 @@ export default function App() {
           <div className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] tracking-[1px] mt-0.5">
             MISSION CONTROL v1.0
           </div>
+          <div className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] text-left mt-2">
+            <span
+              className={sim.complete ? "text-[#00e5ff]" : "text-emerald-400"}
+            >
+              {sim.complete ? "✦ MISSION COMPLETE" : "● MISSION ACTIVE"}
+            </span>
+          </div>
         </div>
 
         {/* Drone count */}
-        <div className="px-2.5 pt-2.5 pb-2 border-b border-[#0f3460]">
+        {/* TODO: To put into config pop up instead */}
+        {/* <div className="px-2.5 pt-2.5 pb-2 border-b border-[#0f3460]">
           <div className="font-['Barlow_Condensed'] text-[9px] text-[#7ca5c9] tracking-widest mb-2 pl-0.5">
             DRONE COUNT
           </div>
@@ -401,7 +377,7 @@ export default function App() {
               {droneCount}
             </span>
           </div>
-        </div>
+        </div> */}
 
         {/* Scenarios */}
         <div className="px-2.5 pt-2.5 pb-1.5 border-b border-[#0f3460]">
@@ -429,17 +405,15 @@ export default function App() {
           <div className="font-['Barlow_Condensed'] text-[9px] text-[#7ca5c9] tracking-widest mb-1.5 pl-0.5">
             CONTROLS
           </div>
-          <button
-            onClick={toggleRun}
-            className={`w-full py-[7px] mb-1.5 rounded-sm cursor-pointer font-['Barlow_Condensed'] text-[11px] tracking-widest font-bold transition-all duration-200 border
-              ${
-                running
-                  ? "bg-red-500/10 border-red-500 text-red-400 hover:bg-red-500/20"
-                  : "bg-[#00e5ff1a] border-[#00e5ff] text-[#00e5ff] hover:bg-[#00e5ff30]"
-              }`}
-          >
-            {running ? "■  PAUSE" : "▶  RUN"}
-          </button>
+          <Button
+            label={running ? "■  PAUSE" : "▶  RUN"}
+            handleClick={toggleRun}
+            className={`w-full py-[7px] mb-1.5 text-[11px] font-bold ${
+              running
+                ? "bg-red-500/10 border-red-500 text-red-400 hover:bg-red-500/20"
+                : "bg-[#00e5ff1a] border-[#00e5ff] text-[#00e5ff] hover:bg-[#00e5ff30]"
+            }`}
+          />
           <div className="flex gap-1">
             {[
               ["STEP", doStep],
@@ -451,14 +425,29 @@ export default function App() {
                 },
               ],
             ].map(([lbl, fn]) => (
-              <button
-                key={lbl}
-                onClick={fn}
-                className="flex-1 py-[5px] bg-transparent border border-[#0f3460] text-[#7ca5c9] rounded-sm cursor-pointer font-['Barlow_Condensed'] text-[10px] tracking-wide hover:border-[#7ca5c9] hover:text-[#e0f0ff] transition-all"
-              >
-                {lbl}
-              </button>
+              <Button
+                key={lbl as string}
+                label={lbl as string}
+                handleClick={fn as () => void}
+                className="flex-1 py-[5px]"
+              />
             ))}
+          </div>
+        </div>
+
+        {/* Domain config */}
+        <div className="px-2.5 py-2 border-t border-[#0f3460] bg-[#040d18] shrink-0">
+          <div className="font-['Barlow_Condensed'] text-[8px] text-[#7ca5c9] tracking-wide mb-1">
+            DOMAIN CONFIG
+          </div>
+          <div className="font-['Share_Tech_Mono'] text-[8.5px] text-[#7ca5c9] leading-relaxed">
+            <span className="text-[#00e5ff]">agent:</span> Rescue Drone
+            <br />
+            <span className="text-[#00e5ff]">target:</span> Survivor
+            <br />
+            <span className="text-[#00e5ff]">hazard_dens:</span> 0.08
+            <br />
+            <span className="text-[#00e5ff]">grid:</span> 20×20
           </div>
         </div>
 
@@ -480,8 +469,8 @@ export default function App() {
               cls: "text-emerald-400",
             },
             { label: "AVG BATTERY", value: `${avgBatt}%`, cls: battColor },
-            { label: "SIM STEP", value: `${sim.step}`, cls: "text-[#7ca5c9]" },
-            { label: "WALL TIME", value: `${mm}:${ss}`, cls: "text-[#7ca5c9]" },
+            // { label: "SIM STEP", value: `${sim.step}`, cls: "text-[#7ca5c9]" },
+            // { label: "WALL TIME", value: `${mm}:${ss}`, cls: "text-[#7ca5c9]" },
           ].map((k) => (
             <div key={k.label} className="mb-2.5">
               <div className="font-['Barlow_Condensed'] text-[8px] text-[#7ca5c9] tracking-wide mb-0.5">
@@ -495,48 +484,12 @@ export default function App() {
             </div>
           ))}
         </div>
-
-        {/* Domain config */}
-        <div className="px-2.5 py-2 border-t border-[#0f3460] bg-[#040d18] shrink-0">
-          <div className="font-['Barlow_Condensed'] text-[8px] text-[#7ca5c9] tracking-wide mb-1">
-            DOMAIN CONFIG
-          </div>
-          <div className="font-['Share_Tech_Mono'] text-[8.5px] text-[#7ca5c9] leading-relaxed">
-            <span className="text-[#00e5ff]">agent:</span> Rescue Drone
-            <br />
-            <span className="text-[#00e5ff]">target:</span> Survivor
-            <br />
-            <span className="text-[#00e5ff]">hazard_dens:</span> 0.08
-            <br />
-            <span className="text-[#00e5ff]">grid:</span> 20×20
-          </div>
-        </div>
       </div>
 
       {/* ── MAIN ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="px-4 py-2 bg-[#081428] border-b border-[#0f3460] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="font-['Barlow_Condensed'] text-[13px] font-bold tracking-widest text-[#00e5ff]">
-              ⬡ SwarmSAR // Mission Control
-            </div>
-            <div className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] tracking-wide">
-              CASE STUDY 3 · DECENTRALISED SWARM INTELLIGENCE · V HACK 2026
-            </div>
-          </div>
-          <div className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] text-right">
-            SIM STEP: {String(sim.step).padStart(4, "0")} &nbsp;|&nbsp; {mm}:
-            {ss} &nbsp;|&nbsp;
-            <span
-              className={sim.complete ? "text-[#00e5ff]" : "text-emerald-400"}
-            >
-              {sim.complete ? "✦ MISSION COMPLETE" : "● MISSION ACTIVE"}
-            </span>
-          </div>
-        </div>
-
         {/* Alert banners */}
+        {/* TODO: Alert Pop Up */}
         {criticals.length > 0 && (
           <div className="px-4 py-1.5 bg-red-500/10 border-b border-red-500 font-['Share_Tech_Mono'] text-[11px] text-red-400 shrink-0">
             ⚠ CRITICAL BATTERY — {criticals.map((d) => d.id).join(", ")} —
@@ -549,9 +502,14 @@ export default function App() {
             {sim.step} simulation steps
           </div>
         )}
-
         {/* Metrics row */}
         <div className="grid grid-cols-5 gap-2 px-3.5 pt-2.5 pb-1.5 shrink-0">
+          <MetricCard
+            label="Sim Steps"
+            value={`${sim.step}`}
+            sub={`WALL: ${mm}:${ss}`}
+            accentColor="border-t-[#7ca5c9]"
+          />
           <MetricCard
             label="Survivors Found"
             value={`${sim.foundTotal}<span style="font-size:14px;color:#7ca5c9">/${sim.totalSurvivors}</span>`}
@@ -572,21 +530,12 @@ export default function App() {
             value={`${avgBatt}<span style="font-size:14px;color:#7ca5c9">%</span>`}
             accentColor={battAccent}
           />
-          <MetricCard
-            label="Sim Steps"
-            value={`${sim.step}`}
-            sub={`WALL: ${mm}:${ss}`}
-            accentColor="border-t-[#7ca5c9]"
-          />
         </div>
-
         {/* Grid + right panels */}
         <div className="flex-1 flex overflow-hidden px-3.5 pb-2.5 pt-0 gap-3">
           {/* Grid */}
           <div className="shrink-0 flex flex-col">
-            <div className="font-['Barlow_Condensed'] text-[9px] tracking-widest text-[#7ca5c9] mb-1.5 mt-1">
-              ▸ DISASTER ZONE — LIVE GRID VIEW
-            </div>
+            <TitleSection label="DISASTER ZONE — LIVE GRID VIEW" />
             {/* Legend */}
             <div className="flex gap-2.5 mb-1.5 font-['Share_Tech_Mono'] text-[8.5px] text-[#7ca5c9] flex-wrap">
               {[
@@ -610,7 +559,7 @@ export default function App() {
             <div
               className="grid gap-px shrink-0"
               style={{
-                gridTemplateColumns: `repeat(${GRID}, 16px)`,
+                gridTemplateColumns: `repeat(${GRID}, 24px)`,
                 background: "#0f3460",
                 border: "1px solid #0f3460",
               }}
@@ -623,7 +572,7 @@ export default function App() {
                 return (
                   <div
                     key={`${cell.x}-${cell.y}`}
-                    className="w-4 h-4 flex items-center justify-center text-[7px] transition-colors duration-200"
+                    className="w-6 h-6 flex items-center justify-center text-[7px] transition-colors duration-200"
                     style={{
                       background: cellBg(cell, sim.drones),
                       outline: drone
@@ -659,9 +608,7 @@ export default function App() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Fleet */}
             <div className="shrink-0 pt-1">
-              <div className="font-['Barlow_Condensed'] text-[9px] tracking-widest text-[#7ca5c9] mb-1.5">
-                ▸ FLEET STATUS
-              </div>
+              <TitleSection label="FLEET STATUS" />
               {sim.drones.map((d) => {
                 const borderColor = {
                   ACTIVE: "#2ed573",
@@ -715,16 +662,12 @@ export default function App() {
 
             {/* Log */}
             <div className="flex-1 flex flex-col overflow-hidden mt-2">
-              <div className="flex items-center justify-between mb-1.5 shrink-0">
-                <div className="font-['Barlow_Condensed'] text-[9px] tracking-widest text-[#7ca5c9]">
-                  ▸ MISSION LOG — AGENT REASONING
-                </div>
-                <button
-                  onClick={() => downloadLog(logs, scenario, sim.step)}
-                  className="font-['Barlow_Condensed'] text-[9px] tracking-wider px-3 py-1 border border-[#0f3460] text-[#7ca5c9] bg-transparent rounded-sm cursor-pointer hover:border-[#00e5ff] hover:text-[#00e5ff] transition-all"
-                >
-                  ⇓ DOWNLOAD LOG
-                </button>
+              <div className="flex items-start justify-between mb-1.5 shrink-0">
+                <TitleSection label="MISSION LOG - AGENT REASONING" />
+                <Button
+                  label="DOWNLOAD LOG"
+                  handleClick={() => downloadLog(logs, scenario, sim.step)}
+                />
               </div>
               <div
                 ref={logRef}
@@ -733,7 +676,7 @@ export default function App() {
                 {logs.map((log, i) => (
                   <div
                     key={log.id}
-                    className={`flex gap-2 mb-1 pl-2 border-l-2 py-0.5 ${i === 0 ? LOG_BORDER[log.type] : "border-[#0f3460]"}`}
+                    className={`flex gap-2 mb-1 pl-2 border-l-2 py-0.5 ${i === 0 ? LOG_BORDER[log.type as keyof typeof LOG_BORDER] : "border-[#0f3460]"}`}
                     style={{ opacity: Math.max(0.3, 1 - i * 0.04) }}
                   >
                     <span className="font-['Share_Tech_Mono'] text-[8.5px] text-[#0f3460] shrink-0 mt-px">
