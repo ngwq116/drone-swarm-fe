@@ -16,9 +16,14 @@ A browser-based simulation dashboard for drone swarm Search-and-Rescue (SAR) mis
 
 ## Tech Stack
 
+**Frontend**
 - **React 19** + **TypeScript**
 - **Vite** (dev server & build)
 - **Tailwind CSS v4**
+
+**Backend MCP Framework**
+- **MESA** — multi-agent simulation environment
+- **FastMCP** — Python framework for building MCP servers
 
 ## Setup
 
@@ -63,6 +68,7 @@ The simulation models a **leader-follower & CTDE hybrid** architecture:
 ## Future Improvements
 
 - **MCP (Model Context Protocol) Integration**: connect the simulation to a real MCP server so that an AI agent (e.g. Claude) can issue tool calls — `get_active_drones()`, `assign_sector()`, `get_risk_map()` — against live drone state rather than simulated log entries. This will turn the dashboard into a true human-in-the-loop MCP client for swarm coordination.
+- **Self-hosted LLM Support**: integrate a self-hosted model (e.g. Mistral 7B) as the swarm reasoning agent, removing dependency on external APIs and enabling fully offline mission planning
 - Real pathfinding algorithms (A*, boustrophedon coverage planning)
 - WebSocket backend for multi-user mission monitoring
 - Persistent mission history and replay
