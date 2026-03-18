@@ -1,5 +1,6 @@
 type CardFleetStatusProps = {
   id: string;
+  batch: 1 | 2;
   borderColor: string | undefined;
   statusColor: string | undefined;
   battCls: string;
@@ -14,6 +15,7 @@ type CardFleetStatusProps = {
 
 const CardFleetStatus = ({
   id,
+  batch,
   borderColor,
   statusColor,
   battCls,
@@ -32,7 +34,8 @@ const CardFleetStatus = ({
       style={{ borderLeft: `3px solid ${borderColor}` }}
     >
       <span className="font-share-tech-mono text-[10px] text-[#00e5ff] w-14 shrink-0">
-        {id.replace("drone_", "UAV-")}
+        {batch === 2 && <span className="text-[#ff9500]">[B2] </span>}
+        {id.replace("drone_", "UAV-").replace("backup_", "BKP-")}
       </span>
       <span
         className={`font-share-tech-mono text-[9px] w-16 shrink-0 ${statusColor}`}

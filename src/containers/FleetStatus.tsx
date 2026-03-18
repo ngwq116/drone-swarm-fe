@@ -11,17 +11,23 @@ const FleetStatus = ({ drones }: FleetStatusProps) => {
     <div className="shrink-0 pt-1">
       <TitleSection label="FLEET STATUS" />
       {drones.map((d) => {
-        const borderColor = {
+        const borderColorMap: Record<string, string> = {
           ACTIVE: "#2ed573",
           CHARGING: "#ffb703",
           FAILED: "#ff4757",
-        }[d.status];
+          STANDBY: "#4a4a6a",
+        };
+        const borderColor =
+          d.batch === 2 && d.status === "ACTIVE"
+            ? "#ff9500"
+            : borderColorMap[d.status];
         const statusColor = {
           ACTIVE: "text-emerald-400",
           CHARGING: "text-amber-400",
           FAILED: "text-red-400",
+          STANDBY: "text-[#4a4a6a]",
         }[d.status];
-        const icon = { ACTIVE: "●", CHARGING: "⚡", FAILED: "✗" }[d.status];
+        const icon = { ACTIVE: "●", CHARGING: "⚡", FAILED: "✗", STANDBY: "◌" }[d.status];
         const battCls =
           d.battery > 50
             ? "text-emerald-400"
@@ -30,7 +36,9 @@ const FleetStatus = ({ drones }: FleetStatusProps) => {
               : "text-red-400";
         return (
           <CardFleetStatus
+            key={d.id}
             id={d.id}
+            batch={d.batch}
             borderColor={borderColor}
             statusColor={statusColor}
             battCls={battCls}

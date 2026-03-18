@@ -24,11 +24,14 @@ export default function App() {
   const [elapsed, setElapsed] = useState(0);
   const [droneCount, setDroneCount] = useState(5);
   const [alertDismissed, setAlertDismissed] = useState(false);
+
   const intervalRef = useRef<number | null>(null);
   const timerRef = useRef<number | null>(null);
 
   const [gridSize, setGridSize] = useState(20);
-  const [, setTargetCount] = useState(sim.totalSurvivors);
+  const [backupCount, setBackupCount] = useState(2);
+  const [backupDeployStep, setBackupDeployStep] = useState(10);
+  const [targetCount, setTargetCount] = useState(8);
 
   // eslint-disable-next-line react-hooks/purity
   const startRef = useRef<number>(Date.now());
@@ -47,18 +50,21 @@ export default function App() {
         sim.drones.reduce((s, d) => s + d.battery, 0) / sim.drones.length,
       )
     : 0;
+
   const battAccent =
     avgBatt > 50
       ? "border-t-emerald-400"
       : avgBatt > 25
         ? "border-t-amber-400"
         : "border-t-red-500";
+
   const battColor =
     avgBatt > 50
       ? "text-emerald-400"
       : avgBatt > 25
         ? "text-amber-400"
         : "text-red-400";
+
   const criticals = sim.drones.filter(
     (d) => d.status === "ACTIVE" && d.battery < 25,
   );
@@ -78,43 +84,109 @@ export default function App() {
     [pushLog],
   );
 
-  const loadScenario = (name: string, overrideDrones?: number) => {
-    clearInterval(intervalRef.current ?? undefined);
-    setRunning(false);
-    const cfg = {
-      ...SCENARIOS[name as keyof typeof SCENARIOS],
-      n_drones: overrideDrones ?? droneCount,
-    };
-    setSim(initSim(cfg));
-    setLogs([]);
-    startRef.current = Date.now();
-    setElapsed(0);
-    setScenario(name as keyof typeof SCENARIOS);
-    setTimeout(() => {
-      pushLog("SYS", "SwarmSAR Mission Control online");
-      pushLog(
-        "SYS",
-        `Loaded: ${name} — ${cfg.n_drones} UAVs, ${cfg.n_survivors} survivors`,
-      );
-      pushLog(
-        "REASONING",
-        "[REASONING] Calling get_active_drones() to discover fleet...",
-      );
-      pushLog("TOOL", `→ get_active_drones() — ${cfg.n_drones} UAVs detected`);
-      pushLog(
-        "REASONING",
-        "[REASONING] Assessing sector risk map before mission assignment...",
-      );
-      pushLog(
-        "TOOL",
-        "→ get_risk_map(SE) → avg_risk: 0.71 AVOID — routing around hazard cluster",
-      );
-      pushLog(
-        "RESULT",
-        "Mission plan: sectors assigned, boustrophedon sweep initialised",
-      );
-    }, 50);
-  };
+  const loadScenario = useCallback(
+    (name: string, overrideDrones?: number) => {
+      clearInterval(intervalRef.current ?? undefined);
+      setRunning(false);
+      const cfg = {
+        ...SCENARIOS[name as keyof typeof SCENARIOS],
+        n_drones: overrideDrones ?? droneCount,
+        n_survivors: targetCount,
+        backup_count: backupCount,
+        backup_deploy_step: backupDeployStep,
+      };
+      setSim(initSim(cfg));
+      setLogs([]);
+      startRef.current = Date.now();
+      setElapsed(0);
+      setScenario(name as keyof typeof SCENARIOS);
+      setTimeout(() => {
+        pushLog("SYS", "SwarmSAR Mission Control online");
+        pushLog(
+          "SYS",
+          `Loaded: ${name} — ${cfg.n_drones} UAVs, ${cfg.n_survivors} survivors`,
+        );
+        pushLog(
+          "REASONING",
+          "[REASONING] Calling get_active_drones() to discover fleet...",
+        );
+        pushLog(
+          "TOOL",
+          `→ get_active_drones() — ${cfg.n_drones} UAVs detected`,
+        );
+        pushLog(
+          "REASONING",
+          "[REASONING] Assessing sector risk map before mission assignment...",
+        );
+        pushLog(
+          "TOOL",
+          "→ get_risk_map(SE) → avg_risk: 0.71 AVOID — routing around hazard cluster",
+        );
+        pushLog(
+          "RESULT",
+          "Mission plan: sectors assigned, boustrophedon sweep initialised",
+        );
+      }, 50);
+    },
+    [backupCount, backupDeployStep, droneCount, targetCount, pushLog],
+  );
+
+  const applyAndReset = useCallback(
+    (config: {
+      droneCount: number;
+      gridSize: number;
+      targetCount: number;
+      backupCount: number;
+      backupDeployStep: number;
+    }) => {
+      setDroneCount(config.droneCount);
+      setGridSize(config.gridSize);
+      setTargetCount(config.targetCount);
+      setBackupCount(config.backupCount);
+      setBackupDeployStep(config.backupDeployStep);
+      clearInterval(intervalRef.current ?? undefined);
+      setRunning(false);
+      const cfg = {
+        ...SCENARIOS[scenario as keyof typeof SCENARIOS],
+        n_drones: config.droneCount,
+        n_survivors: config.targetCount,
+        backup_count: config.backupCount,
+        backup_deploy_step: config.backupDeployStep,
+      };
+      setSim(initSim(cfg));
+      setLogs([]);
+      startRef.current = Date.now();
+      setElapsed(0);
+      setTimeout(() => {
+        pushLog("SYS", "SwarmSAR Mission Control online");
+        pushLog(
+          "SYS",
+          `Loaded: ${scenario} — ${cfg.n_drones} UAVs, ${cfg.n_survivors} survivors`,
+        );
+        pushLog(
+          "REASONING",
+          "[REASONING] Calling get_active_drones() to discover fleet...",
+        );
+        pushLog(
+          "TOOL",
+          `→ get_active_drones() — ${cfg.n_drones} UAVs detected`,
+        );
+        pushLog(
+          "REASONING",
+          "[REASONING] Assessing sector risk map before mission assignment...",
+        );
+        pushLog(
+          "TOOL",
+          "→ get_risk_map(SE) → avg_risk: 0.71 AVOID — routing around hazard cluster",
+        );
+        pushLog(
+          "RESULT",
+          "Mission plan: sectors assigned, boustrophedon sweep initialised",
+        );
+      }, 50);
+    },
+    [scenario, pushLog],
+  );
 
   const toggleRun = () => {
     if (running) {
@@ -180,10 +252,9 @@ export default function App() {
         {configOpen && (
           <ModalConfig
             setConfigOpen={setConfigOpen}
-            setDroneCount={setDroneCount}
-            setGridSize={setGridSize}
-            setTargetCount={setTargetCount}
-            // init={init}
+            backupCount={backupCount}
+            backupDeployStep={backupDeployStep}
+            applyAndReset={applyAndReset}
           />
         )}
 

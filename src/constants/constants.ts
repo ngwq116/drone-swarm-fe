@@ -40,5 +40,7 @@ export const LEGEND_COLORS = [
   ["#0a2e1a", "SCANNED"],
   ["#00e5ff", "DRONE (ACTIVE)"],
   ["#ffb703", "DRONE (CHARGING)"],
+  ["#ff9500", "DRONE (BACKUP)"],
+  ["#4a4a6a", "DRONE (STANDBY)"],
   ["#7c5200", "SURVIVOR ✓"],
 ];

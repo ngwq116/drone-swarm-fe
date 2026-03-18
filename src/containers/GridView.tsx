@@ -7,23 +7,18 @@ type GridViewProps = {
   drones: TDrones[];
 };
 
-const GridView = ({ cells, drones }: GridViewProps) => {
-  const cellBg = (cell: TCell, drones: TDrones[]) => {
-    const drone = drones.find(
-      (d) => d.x === cell.x && d.y === cell.y && d.status !== "FAILED",
-    );
-    if (drone) return drone.status === "CHARGING" ? "#ffb703" : "#00e5ff";
-    if (cell.found) return "#7c5200";
-    if (cell.hazard) return "#2d0a00";
-    if (cell.visited) return "#0a2e1a";
-    return "#0c1e38";
-  };
+function droneColor(drone: TDrones): string {
+  if (drone.status === "CHARGING") return "#ffb703";
+  if (drone.batch === 2) return "#ff9500"; // backup active
+  return "#00e5ff"; // primary active
+}
 
+const GridView = ({ cells, drones }: GridViewProps) => {
   return (
-    <div className="shrink-0 flex flex-col">
+    <div className="shrink-0 flex flex-col w-auto">
       <TitleSection label="DISASTER ZONE — LIVE GRID VIEW" />
       {/* Legend */}
-      <div className="flex gap-2.5 mb-1.5 font-share-tech-mono text-[8.5px] text-[#7ca5c9] flex-wrap">
+      <div className="flex gap-2.5 mb-1.5 font-share-tech-mono text-[8.5px] text-[#7ca5c9] flex-wrap max-w-[500px]">
         {LEGEND_COLORS.map(([bg, lbl]) => (
           <span key={lbl} className="flex items-center gap-1">
             <span
@@ -45,17 +40,27 @@ const GridView = ({ cells, drones }: GridViewProps) => {
       >
         {cells.flat().map((cell) => {
           const drone = drones.find(
-            (d) => d.x === cell.x && d.y === cell.y && d.status !== "FAILED",
+            (d) =>
+              d.x === cell.x &&
+              d.y === cell.y &&
+              d.status !== "FAILED" &&
+              d.status !== "STANDBY",
           );
           return (
             <div
               key={`${cell.x}-${cell.y}`}
               className="w-6 h-6 flex items-center justify-center text-[7px] transition-colors duration-200"
               style={{
-                background: cellBg(cell, drones),
-                outline: drone
-                  ? `1px solid ${drone.status === "CHARGING" ? "#ffb703" : "#00e5ff"}`
-                  : "none",
+                background: drone
+                  ? droneColor(drone)
+                  : cell.found
+                    ? "#7c5200"
+                    : cell.hazard
+                      ? "#2d0a00"
+                      : cell.visited
+                        ? "#0a2e1a"
+                        : "#0c1e38",
+                outline: drone ? `1px solid ${droneColor(drone)}` : "none",
               }}
             >
               {drone ? (
