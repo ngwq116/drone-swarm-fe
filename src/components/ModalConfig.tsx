@@ -2,24 +2,36 @@ import { useState } from "react";
 
 type ModalConfigProps = {
   setConfigOpen: (open: boolean) => void;
-  setDroneCount: (count: number) => void;
-  setGridSize: (size: number) => void;
-  setTargetCount: (count: number) => void;
-  //   init: (domain: string) => void;
+  backupCount: number;
+  backupDeployStep: number;
+  applyAndReset: (config: {
+    droneCount: number;
+    gridSize: number;
+    targetCount: number;
+    backupCount: number;
+    backupDeployStep: number;
+  }) => void;
 };
 
 const ModalConfig = ({
   setConfigOpen,
-  setDroneCount,
-  setGridSize,
-  setTargetCount,
-  //   init,
+  backupCount,
+  backupDeployStep,
+  applyAndReset,
 }: ModalConfigProps) => {
   const [draftConfig, setDraftConfig] = useState({
     droneCount: 5,
     gridSize: 20,
     targetCount: 8,
+    backupCount: backupCount,
+    backupDeployStep: backupDeployStep,
   });
+
+  const handleApplyReset = () => {
+    applyAndReset(draftConfig);
+    setConfigOpen(false);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -37,16 +49,16 @@ const ModalConfig = ({
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[#0f3460]">
           <span className="text-[#00e5ff] text-base">⚙</span>
           <div>
-            <p className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] tracking-widest">
+            <p className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
               SWARMSAR — MISSION CONTROL
             </p>
-            <p className="font-['Share_Tech_Mono'] text-[13px] text-[#00e5ff] font-bold tracking-widest">
+            <p className="font-share-tech-mono text-[13px] text-[#00e5ff] font-bold tracking-widest">
               MISSION CONFIGURATION
             </p>
           </div>
           <button
             onClick={() => setConfigOpen(false)}
-            className="ml-auto text-[#7ca5c9] hover:text-white font-['Share_Tech_Mono'] text-[14px] cursor-pointer transition-colors"
+            className="ml-auto text-[#7ca5c9] hover:text-white font-share-tech-mono text-[14px] cursor-pointer transition-colors"
           >
             ✕
           </button>
@@ -57,10 +69,10 @@ const ModalConfig = ({
           {/* Drone Count */}
           <div>
             <div className="flex justify-between mb-2">
-              <label className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] tracking-widest">
+              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
                 DRONE COUNT
               </label>
-              <span className="font-['Share_Tech_Mono'] text-[13px] text-[#00e5ff] leading-none">
+              <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
                 {draftConfig.droneCount}
               </span>
             </div>
@@ -79,10 +91,10 @@ const ModalConfig = ({
               className="w-full h-1 accent-[#00e5ff] cursor-pointer"
             />
             <div className="flex justify-between mt-1">
-              <span className="font-['Share_Tech_Mono'] text-[8px] text-[#7ca5c9]/40">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
                 2
               </span>
-              <span className="font-['Share_Tech_Mono'] text-[8px] text-[#7ca5c9]/40">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
                 10
               </span>
             </div>
@@ -91,10 +103,10 @@ const ModalConfig = ({
           {/* Grid Size */}
           <div>
             <div className="flex justify-between mb-2">
-              <label className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] tracking-widest">
+              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
                 GRID SIZE
               </label>
-              <span className="font-['Share_Tech_Mono'] text-[13px] text-[#00e5ff] leading-none">
+              <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
                 {draftConfig.gridSize}×{draftConfig.gridSize}
               </span>
             </div>
@@ -113,10 +125,10 @@ const ModalConfig = ({
               className="w-full h-1 accent-[#00e5ff] cursor-pointer"
             />
             <div className="flex justify-between mt-1">
-              <span className="font-['Share_Tech_Mono'] text-[8px] text-[#7ca5c9]/40">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
                 10×10
               </span>
-              <span className="font-['Share_Tech_Mono'] text-[8px] text-[#7ca5c9]/40">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
                 30×30
               </span>
             </div>
@@ -125,10 +137,10 @@ const ModalConfig = ({
           {/* Target Count */}
           <div>
             <div className="flex justify-between mb-2">
-              {/* <label className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] tracking-widest">
+              {/* <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
                 {cfg.targetLabel.toUpperCase()} COUNT
               </label> */}
-              <span className="font-['Share_Tech_Mono'] text-[13px] text-[#00e5ff] leading-none">
+              <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
                 {draftConfig.targetCount}
               </span>
             </div>
@@ -147,10 +159,10 @@ const ModalConfig = ({
               className="w-full h-1 accent-[#00e5ff] cursor-pointer"
             />
             <div className="flex justify-between mt-1">
-              <span className="font-['Share_Tech_Mono'] text-[8px] text-[#7ca5c9]/40">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
                 1
               </span>
-              <span className="font-['Share_Tech_Mono'] text-[8px] text-[#7ca5c9]/40">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
                 20
               </span>
             </div>
@@ -159,10 +171,10 @@ const ModalConfig = ({
           {/* Hazard Density */}
           {/* <div>
             <div className="flex justify-between mb-2">
-              <label className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9] tracking-widest">
+              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
                 HAZARD DENSITY
               </label>
-              <span className="font-['Share_Tech_Mono'] text-[13px] text-[#00e5ff] leading-none">
+              <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
                 {draftConfig.hazardDensity}
               </span>
             </div>
@@ -181,29 +193,95 @@ const ModalConfig = ({
               className="w-full h-1 accent-[#00e5ff] cursor-pointer"
             />
             <div className="flex justify-between mt-1">
-              <span className="font-['Share_Tech_Mono'] text-[8px] text-[#7ca5c9]/40">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
                 0.01 (sparse)
               </span>
-              <span className="font-['Share_Tech_Mono'] text-[8px] text-[#7ca5c9]/40">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
                 0.25 (dense)
               </span>
             </div>
           </div> */}
 
+          {/* Backup Drone Count */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
+                BACKUP DRONE COUNT
+              </label>
+              <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
+                {draftConfig.backupCount}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={8}
+              step={1}
+              value={draftConfig.backupCount}
+              onChange={(e) => setDraftConfig((p) => ({
+                  ...p,
+                  backupCount: Number(e.target.value),
+                }))}
+              className="w-full h-1 accent-[#00e5ff] cursor-pointer"
+            />
+            <div className="flex justify-between mt-1">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
+                0
+              </span>
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
+                8
+              </span>
+            </div>
+          </div>
+
+          {/* Backup Deploy Step Count */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
+                BACKUP DEPLOY STEP COUNT
+              </label>
+              <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
+                {draftConfig.backupDeployStep}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={10}
+              max={100}
+              step={5}
+              value={draftConfig.backupDeployStep}
+              onChange={(e) => setDraftConfig((p) => ({
+                  ...p,
+                  backupDeployStep: Number(e.target.value),
+                }))}
+              className="w-full h-1 accent-[#00e5ff] cursor-pointer"
+            />
+            <div className="flex justify-between mt-1">
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
+                10
+              </span>
+              <span className="font-share-tech-mono text-[8px] text-[#7ca5c9]/40">
+                100
+              </span>
+            </div>
+          </div>
+
           {/* Summary preview */}
           <div className="px-3 py-2.5 bg-[#081428] border border-[#0f3460] rounded-sm">
-            <p className="font-['Share_Tech_Mono'] text-[9px] text-[#7ca5c9]/60 tracking-widest mb-1.5">
+            <p className="font-share-tech-mono text-[9px] text-[#7ca5c9]/60 tracking-widest mb-1.5">
               CONFIGURATION PREVIEW
             </p>
-            <div className="font-['Share_Tech_Mono'] text-[10px] text-[#7ca5c9] leading-relaxed">
+            <div className="font-share-tech-mono text-[10px] text-[#7ca5c9] leading-relaxed">
               <span className="text-[#00e5ff]">drones:</span>{" "}
               {draftConfig.droneCount} &nbsp;
+              <span className="text-[#00e5ff]">backup:</span>{" "}
+              {draftConfig.backupCount} &nbsp;
+              <span className="text-[#00e5ff]">deploy@:</span>{" "}
+              {draftConfig.backupDeployStep} &nbsp;
               <span className="text-[#00e5ff]">grid:</span>{" "}
               {draftConfig.gridSize}×{draftConfig.gridSize} &nbsp;
               <span className="text-[#00e5ff]">targets:</span>{" "}
               {draftConfig.targetCount} &nbsp;
-              {/* <span className="text-[#00e5ff]">hazards:</span>{" "}
-              {draftConfig.hazardDensity} */}
             </div>
           </div>
         </div>
@@ -212,19 +290,13 @@ const ModalConfig = ({
         <div className="flex gap-2 px-5 pb-5">
           <button
             onClick={() => setConfigOpen(false)}
-            className="flex-1 py-2 bg-transparent hover:bg-[#0f3460]/50 border border-[#0f3460] text-[#7ca5c9] font-['Share_Tech_Mono'] text-[10px] tracking-widest rounded-sm transition-all cursor-pointer"
+            className="flex-1 py-2 bg-transparent hover:bg-[#0f3460]/50 border border-[#0f3460] text-[#7ca5c9] font-share-tech-mono text-[10px] tracking-widest rounded-sm transition-all cursor-pointer"
           >
             CANCEL
           </button>
           <button
-            onClick={() => {
-              setDroneCount(draftConfig.droneCount);
-              setGridSize(draftConfig.gridSize);
-              setTargetCount(draftConfig.targetCount);
-              setConfigOpen(false);
-              //   init(domain); // reset mission with new config
-            }}
-            className="flex-1 py-2 bg-[#00e5ff]/10 hover:bg-[#00e5ff]/20 border border-[#00e5ff]/50 hover:border-[#00e5ff] text-[#00e5ff] font-['Share_Tech_Mono'] text-[10px] tracking-widest rounded-sm transition-all cursor-pointer"
+            onClick={handleApplyReset}
+            className="flex-1 py-2 bg-[#00e5ff]/10 hover:bg-[#00e5ff]/20 border border-[#00e5ff]/50 hover:border-[#00e5ff] text-[#00e5ff] font-share-tech-mono text-[10px] tracking-widest rounded-sm transition-all cursor-pointer"
           >
             APPLY & RESET
           </button>
