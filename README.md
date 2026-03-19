@@ -72,4 +72,3 @@ The simulation models a **leader-follower & CTDE hybrid** architecture:
 - Real pathfinding algorithms (A*, boustrophedon coverage planning)
 - WebSocket backend for multi-user mission monitoring
 - Persistent mission history and replay
-- Mobile-responsive layout
