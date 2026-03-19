@@ -71,3 +71,20 @@ export default defineConfig([
   },
 ])
 ```
+
+## Architecture Overview
+
+The simulation models a **leader-follower & CTDE hybrid** architecture:
+
+- **Centralized Training**: mission parameters, sector assignments, and risk maps are configured centrally (simulated via the config panel and scenario presets).
+- **Decentralized Execution**: each drone agent executes its assigned sweep path independently, making local decisions (return to charge, avoid hazards, report survivors) without a central coordinator at runtime.
+- **Leader-Follower**: a designated lead drone initializes the sector sweep; follower drones inherit sector boundaries and adjust dynamically as drones fail or run low on battery.
+- **Backup Drone Deployment**: standby drones are deployed automatically at a configurable step threshold to replace failed or low-battery units.
+
+## Future Improvements
+
+- **MCP (Model Context Protocol) Integration**: connect the simulation to a real MCP server so that an AI agent (e.g. Claude, Mistral 7B) can issue tool calls — `get_active_drones()`, `assign_sector()`, `get_risk_map()` — against live drone state rather than simulated log entries. This will turn the dashboard into a true human-in-the-loop MCP client for swarm coordination.
+- **Self-hosted LLM Support**: integrate a self-hosted model (e.g. Mistral 7B) as the swarm reasoning agent, removing dependency on external APIs and enabling fully offline mission planning
+- Real pathfinding algorithms (A*, boustrophedon coverage planning)
+- WebSocket backend for multi-user mission monitoring
+- Persistent mission history and replay
