@@ -1,1 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600&family=Barlow+Condensed:wght@400;700&display=swap');
 @import "tailwindcss";
+
+.font-barlow {
+  font-family: "Barlow Condensed", sans-serif;
+}
+.font-share-tech-mono {
+  font-family: "Share Tech Mono", monospace;
+}
+
+@keyframes shrink {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
