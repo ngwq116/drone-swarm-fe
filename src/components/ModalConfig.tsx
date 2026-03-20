@@ -69,7 +69,7 @@ const ModalConfig = ({
           {/* Drone Count */}
           <div>
             <div className="flex justify-between mb-2">
-              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
+              <label className="font-share-tech-mono text-[11px] text-[#7ca5c9] tracking-widest">
                 DRONE COUNT
               </label>
               <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
@@ -103,7 +103,7 @@ const ModalConfig = ({
           {/* Grid Size */}
           <div>
             <div className="flex justify-between mb-2">
-              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
+              <label className="font-share-tech-mono text-[11px] text-[#7ca5c9] tracking-widest">
                 GRID SIZE
               </label>
               <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
@@ -140,6 +140,9 @@ const ModalConfig = ({
               {/* <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
                 {cfg.targetLabel.toUpperCase()} COUNT
               </label> */}
+              <label className="font-share-tech-mono text-[11px] text-[#7ca5c9] tracking-widest">
+                TARGET COUNT
+              </label>
               <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
                 {draftConfig.targetCount}
               </span>
@@ -205,7 +208,7 @@ const ModalConfig = ({
           {/* Backup Drone Count */}
           <div>
             <div className="flex justify-between mb-2">
-              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
+              <label className="font-share-tech-mono text-[11px] text-[#7ca5c9] tracking-widest">
                 BACKUP DRONE COUNT
               </label>
               <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
@@ -218,10 +221,12 @@ const ModalConfig = ({
               max={8}
               step={1}
               value={draftConfig.backupCount}
-              onChange={(e) => setDraftConfig((p) => ({
+              onChange={(e) =>
+                setDraftConfig((p) => ({
                   ...p,
                   backupCount: Number(e.target.value),
-                }))}
+                }))
+              }
               className="w-full h-1 accent-[#00e5ff] cursor-pointer"
             />
             <div className="flex justify-between mt-1">
@@ -237,7 +242,7 @@ const ModalConfig = ({
           {/* Backup Deploy Step Count */}
           <div>
             <div className="flex justify-between mb-2">
-              <label className="font-share-tech-mono text-[9px] text-[#7ca5c9] tracking-widest">
+              <label className="font-share-tech-mono text-[11px] text-[#7ca5c9] tracking-widest">
                 BACKUP DEPLOY STEP COUNT
               </label>
               <span className="font-share-tech-mono text-[13px] text-[#00e5ff] leading-none">
@@ -250,10 +255,12 @@ const ModalConfig = ({
               max={100}
               step={5}
               value={draftConfig.backupDeployStep}
-              onChange={(e) => setDraftConfig((p) => ({
+              onChange={(e) =>
+                setDraftConfig((p) => ({
                   ...p,
                   backupDeployStep: Number(e.target.value),
-                }))}
+                }))
+              }
               className="w-full h-1 accent-[#00e5ff] cursor-pointer"
             />
             <div className="flex justify-between mt-1">
@@ -268,7 +275,7 @@ const ModalConfig = ({
 
           {/* Summary preview */}
           <div className="px-3 py-2.5 bg-[#081428] border border-[#0f3460] rounded-sm">
-            <p className="font-share-tech-mono text-[9px] text-[#7ca5c9]/60 tracking-widest mb-1.5">
+            <p className="font-share-tech-mono text-[11px] text-[#7ca5c9]/60 tracking-widest mb-1.5">
               CONFIGURATION PREVIEW
             </p>
             <div className="font-share-tech-mono text-[10px] text-[#7ca5c9] leading-relaxed">
